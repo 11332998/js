@@ -1,0 +1,1559 @@
+"ui";
+var xc1, xc2, 悬浮窗, 超时 = 0, 包名, 退出 = 0, 进度名称, 循环 = 0, 文件地址, 本地数据 = storages.create("11332998");
+
+xc1 = threads.start(function () {
+    var 计时 = 120
+    while (计时 > 0) {
+        sleep("10000");
+        计时 = 计时 - 10
+        toast("倒数" + 计时 + "秒自动点击运行")
+        //engines.myEngine().forceStop()//停止正在运行的脚本
+    }
+    ui.run(function () {
+        ui.开始运行.click();
+    })
+})
+
+ui.layout(
+    <vertical>
+        <horizontal gravity="center">
+            <button id="开始运行" w="auto" h="auto" text="开始运行" />
+            <text text="" w="50" h="auto" />
+            <button id="停止运行" w="auto" h="auto" text="停止运行" />
+        </horizontal>
+        <text text="" w="*" h="20" bg="#FF009688" />
+        <ScrollView>//让列表支持垂直滚动
+            <vertical>//垂直布局
+                <checkbox id="米赚头条" w="auto" checked="true" text="米赚头条" />
+                <checkbox id="趣看看" w="auto" checked="true" text="趣看看" />
+                <checkbox id="想看" w="auto" checked="true" text="想看" />
+                <checkbox id="火山极速版" w="auto" checked="true" text="火山极速版" />
+                <checkbox id="福利头条" w="auto" checked="true" text="福利头条" />
+                <checkbox id="二头条" w="auto" checked="true" text="二头条" />
+                <checkbox id="红包盒子" w="auto" checked="true" text="红包盒子" />
+                <checkbox id="趣多多" w="auto" checked="true" text="趣多多" />
+                <checkbox id="花生头条" w="auto" checked="true" text="花生头条" />
+                <checkbox id="快看点" w="auto" checked="true" text="快看点" />
+                <checkbox id="快手极速版" w="auto" checked="true" text="快手极速版" />
+                <checkbox id="趣头条" w="auto" checked="true" text="趣头条" />
+                <checkbox id="微鲤" w="auto" checked="true" text="微鲤" />
+                <checkbox id="优看点" w="auto" checked="true" text="优看点" />
+                <checkbox id="多福看看" w="auto" checked="true" text="多福看看" />
+                <text w="auto" h="auto" text="I" />
+                <button id="下载趣多多" w="auto" h="auto" text="下载趣多多1.03" />
+            </vertical>
+        </ScrollView>
+    </vertical>
+);
+
+ui.下载趣多多.click(function () {
+    threads.start(function () {
+        toast("开始下载趣多多");
+        if (xc1.isAlive() == true) { xc1.interrupt(); toast("关闭线程1"); }
+        坚果云获取("软件/趣多多.apk", "/sdcard/趣多多.apk");
+        sleep("1000")
+    });
+});
+
+
+ui.停止运行.click(function () {
+    toast("停止运行");
+    engines.stopAll();
+});
+
+ui.开始运行.click(function () {
+    threads.start(function () {
+        auto();
+        threads.start(function () {
+            click("立即开始");
+            sleep("2000");
+            click("立即开始");
+            sleep("3000");
+            click("立即开始");
+        })
+        requestScreenCapture();
+        //
+        悬浮窗 = floaty.window(
+            <frame gravity="center">
+                <text id="text" textColor="#0000FF" textStyle="bold">【开始运行】</text>
+            </frame>
+        );
+        悬浮窗.setPosition(5, 400);
+        var 本地天数 = storages.create("本地天数");
+        if (xc1.isAlive() == true) { xc1.interrupt(); 显示("关闭线程1"); }
+        var d = new Date(), 第几天 = d.getDate();
+        if (本地天数.get("第几天", "0") != 第几天) {
+            storages.remove("11332998");//清空本地储存的所有内容
+            本地天数.put("第几天", 第几天);//储存天数进本地数据
+            显示("任务进度重置成功");
+        }
+        while (true) {
+            //if (ui.米赚头条.checked && getPackageName("米赚头条") != null) { 米赚头条(); }
+            //if (ui.趣看看.checked && getPackageName("趣看看") != null) { 趣看看(); }
+            if (ui.趣多多.checked && getPackageName("趣多多") != null) { 趣多多(); }
+            if (ui.微鲤.checked) { if (getPackageName("微鲤") != null || getPackageName("微鲤-尊享版") != null) { 微鲤(); } }
+            if (ui.红包盒子.checked && getPackageName("红包盒子") != null) { 红包盒子(); }
+            if (ui.想看.checked && getPackageName("想看") != null) { 想看(); }
+            if (ui.花生头条.checked && getPackageName("花生头条") != null) { 花生头条(); }
+            if (ui.快看点.checked && getPackageName("快看点") != null) { 快看点(); }
+            if (ui.火山极速版.checked && getPackageName("火山极速版") != null) { 火山极速版(); }
+            if (ui.多福看看.checked && getPackageName("多福看看") != null) { 多福看看(); }
+            if (ui.趣头条.checked && getPackageName("趣头条") != null) { 趣头条(); }
+            if (ui.优看点.checked && getPackageName("优看点") != null) { 优看点(); }
+            if (ui.快手极速版.checked && getPackageName("快手极速版") != null) { 快手极速版(); }
+            if (ui.福利头条.checked && getPackageName("福利头条") != null) { 福利头条(); }
+            if (ui.二头条.checked) { if (getPackageName("二头条") != null || getPackageName("二头条内容资讯") != null) { 二头条(); } }
+
+            循环++;
+            if (循环 == 5) {
+                清理内存();
+                显示("今日任务完成");
+                while (true) {
+                    sleep("5000");
+                }
+            }
+            sleep("3000");
+        }
+    });
+});
+
+function 时间控制(一轮时间, 限定时间, 储存名称) {
+    var 写入内容;
+    显示("时间控制启动成功")
+    while (true) {
+        sleep("60000");
+        写入内容 = 本地数据.get(储存名称, "0");
+        写入内容++;
+        一轮时间--;
+        本地数据.put(储存名称, 写入内容);
+        if (写入内容 >= 限定时间 || 一轮时间 < 1) {
+            退出 = 1;
+            sleep(1000);
+            return;
+        }
+    }
+}
+
+function 趣看看() {
+    if (本地数据.get("趣看看", "0") >= 20) { return; }
+    // 清理内存();
+    包名 = "com.popnews2345";
+    // 打开应用(包名);
+    xc2 = threads.start(function () { 时间控制(20, 50, "趣看看"); })
+    var 滑动次数 = 0, 签到 = 0
+    while (true) {
+        if (退出 == 1) { 退出 = 0; return; }
+        sleep(1000);
+        if (id("com.startnews.plugin:id/img_red_pack").findOnce()) {
+            超时 = 0;
+            阅读页上滑();
+            滑动次数++;
+            var 随机数 = random(16, 21);
+            显示("滑动" + 滑动次数 + "随机" + 随机数);
+            if (滑动次数 >= 随机数) {
+                滑动次数 = 0
+                显示("次数到");
+                back();
+                sleep(2000);
+            }
+            else if (滑动次数 >= random(4, 9) && 滑动次数 < 10) {
+                var dj = textContains("点击阅读全文").findOnce()
+                if (dj) {
+                    var x = dj.bounds().centerX(), y = dj.bounds().centerY()
+                    显示("全文" + x + "-" + y);
+                    if (x > 0 && y < 1600 && y > 300) { click(x + random(1, 99), y); sleep(2000); }
+                }
+            }
+        }
+        else if (text("任务中心").exists()) {
+            显示("任务中心");
+            sleep(3000);
+            if (text("立即签到").exists()) {
+                click("立即签到");
+                显示("立即签到");
+                sleep(4000);
+                back();
+                sleep(2000);
+            }
+            click("头条");
+            sleep(2000);
+        }
+        else if (text("推荐").exists()) {
+            显示("首页");
+            超时 = 0;
+            if (签到 != 1) { 签到 = 1; click("任务"); 显示("签到"); }
+            首页上滑();
+            首页上滑();
+            var dj = id("com.startnews.plugin:id/tv_news_from").boundsInside(5, 400, 1070, 1500).findOne(2000)
+            if (dj) {
+                click(dj.text())
+                显示("文章")
+                sleep(4000);
+            }
+        }
+        else {
+            超时处理();
+        }
+    }
+
+}
+
+
+function 米赚头条() {
+    if (本地数据.get("米赚头条", "0") >= 25) { return; }
+    //清理内存();
+    包名 = "me.toutiaoapp";
+    //打开应用(包名);
+    xc2 = threads.start(function () { 时间控制(25, 50, "米赚头条"); })
+    var 滑动次数 = 0;
+    while (true) {
+        if (退出 == 1) { 退出 = 0; return; }
+        sleep(1000);
+        if (text("取消").exists()) {
+            click("取消");
+            显示("取消");
+            sleep(2000);
+        }
+        else if (id("me.toutiaoapp:id/nick").exists()) {
+            超时 = 0;
+            阅读页上滑();
+            滑动次数++;
+            var 随机数 = random(17, 22);
+            显示("滑动" + 滑动次数 + "随机" + 随机数);
+            if (滑动次数 >= 随机数) {
+                滑动次数 = 0
+                显示("次数到");
+                back();
+                sleep(2000);
+            }
+        }
+        else if (text("推荐").exists()) {
+            显示("首页");
+            超时 = 0;
+            首页上滑();
+            首页上滑();
+            dj = id("me.toutiaoapp:id/info").boundsInside(5, 850, 1070, 1500).findOne(2000)
+            if (dj.text() != null) {
+                click(dj.text())
+                显示(dj.text())
+                sleep(4000);
+            }
+        }
+        else {
+            超时处理();
+        }
+    }
+
+}
+
+
+function 想看() {
+    if (本地数据.get("想看", "0") >= 90) { return; }
+    清理内存();
+    包名 = "com.xiangkan.android";
+    打开应用(包名);
+    xc2 = threads.start(function () { 时间控制(30, 90, "想看"); })
+    var 滑动次数 = 0;
+    while (true) {
+        if (退出 == 1) { 退出 = 0; return; }
+        sleep(1000);
+        if (id("closelv").exists() || id("btn_close").exists()) {
+            显示("弹窗");
+            back();
+            sleep("2000");
+        }
+        else if (id("img_back").exists()) {
+            显示("视频返回");
+            back();
+            sleep(2000);
+        }
+        else if (text("领取奖励").exists()) {
+            click("领取奖励");
+            显示("领取奖励");
+            sleep(2000);
+        }
+        else if (text("继续阅读").exists()) {
+            click("继续阅读");
+            显示("继续阅读");
+            sleep(2000);
+        }
+        else if (text("开福袋").exists()) {
+            click("开福袋");
+            显示("开福袋");
+            sleep(2000);
+        }
+        else if (textContains("知道了").findOnce()) {
+            click("知道了");
+            显示("知道了");
+            sleep(2000);
+        }
+        else if (id("action_bar_back").exists()) {
+            超时 = 0;
+            阅读页上滑();
+            滑动次数++;
+            var 随机数 = random(17, 22);
+            显示("滑动" + 滑动次数 + "随机" + 随机数);
+            if (滑动次数 >= 随机数) {
+                滑动次数 = 0
+                显示("次数到");
+                back();
+                sleep(2000);
+            }
+        }
+        else if (text("签到").exists()) {
+            click("签到");
+            显示("签到");
+            sleep(2000);
+        }
+        else if (text("推荐").exists()) {
+            显示("首页");
+            超时 = 0;
+            if (text("领金币").exists()) {
+                click("领金币");
+                sleep(2000);
+            }
+            if (textContains("刷新一下").findOnce()) {
+                click("刷新一下");
+                显示("刷新一下");
+                sleep(4000);
+            }
+            首页上滑();
+            var dj = id("tvInfo").boundsInside(10, 1000, 1070, 1500).findOne(500);
+            var 视频 = id("video_item_play_btn").boundsInside(10, 1000, 1070, 1500).findOnce();
+            if (dj && !视频) {
+                if (dj.text().indexOf("广告") < 0 && dj.text().indexOf("电影") < 0 && dj.text().indexOf("音乐") < 0) {
+                    click(dj.text());
+                    显示(dj.text());
+                    sleep(4000);
+                }
+            }
+        }
+        else {
+            超时处理();
+        }
+    }
+}
+
+function 火山极速版() {
+    if (本地数据.get("火山极速版", "0") >= 60) { return; }
+    清理内存();
+    包名 = "com.ss.android.ugc.livelite";
+    打开应用(包名);
+    xc2 = threads.start(function () { 时间控制(30, 60, "火山极速版"); })
+    while (true) {
+        if (退出 == 1) { 退出 = 0; return; }
+        sleep(1000);
+        if (text("点击领取").exists()) {
+            click("点击领取");
+            显示("点击领取");
+            sleep(4000);
+            swipe(w * 0.6 - random(10, 30), h * 0.7 + random(10, 20), w * 0.6 + random(50, 80), h * 0.4 + random(10, 30), random(220, 235));
+            sleep(2000);
+        }
+        else if (text("以后再说").exists()) {
+            sleep("3000")
+            click("以后再说");
+            显示("以后再说");
+            sleep("4000")
+        }
+        else if (id("n8").exists()) {
+            //播放页
+            //火山看广告签到()
+            if (random(1, 30) == 9) {
+                //随机返回首页
+                back();
+                sleep("2000");
+            }
+            else {
+                if (random(1, 30) == 6) {
+                    //随机点赞
+                    var 随机x = random(402, 601), 随机y = random(500, 700);
+                    click(随机x, 随机y);
+                    sleep(100);
+                    click(随机x, 随机y);
+                    sleep(3000);
+                }
+                倒计时(random(30, 60));
+                var w = device.width;
+                var h = device.height;
+                swipe(w * 0.6 - random(10, 30), h * 0.7 + random(10, 20), w * 0.6 + random(50, 80), h * 0.4 + random(10, 30), random(220, 235));
+                sleep(2000);
+            }
+        }
+        else if (id("p3").exists()) {
+            显示("首页");
+            超时 = 0;
+            //火山看广告签到()
+            首页上滑();
+            首页上滑();
+            var dj = id("p3").findOne(2000);
+            if (dj) {
+                var x = dj.bounds().centerX(), y = dj.bounds().centerY() - 100
+                显示(x + "-" + y)
+                if (x > 0 && y > 300) { click(x, y); sleep(4000); }
+            }
+        }
+        else if (text("继续退出").exists()) {
+            sleep("3000")
+            click("继续退出");
+            sleep("4000")
+        }
+        else if (text("关闭广告").exists()) {
+            sleep("3000")
+            click("关闭广告");
+            sleep("4000")
+        } else {
+            超时处理();
+        }
+    }
+    function 火山看广告签到() {
+        var 广告 = 本地数据.get("火山看视频广告", "0"), 签到 = 0, 次数 = 0
+        while (广告 < 13) {
+            click("红包")
+            sleep("5000")
+            click("看视频赚海量金币")
+            显示("赚海量金币")
+            while (true) {
+                sleep("2000")
+                if (text("继续退出").exists()) {
+                    sleep("3000")
+                    click("继续退出");
+                    sleep("4000")
+                }
+                if (text("好的").exists()) {
+                    sleep("2000")
+                    click("好的");
+                    sleep("4000")
+                }
+                if (text("关闭广告").exists()) {
+                    次数 = 0
+                    sleep("3000")
+                    click("关闭广告");
+                    sleep("4000")
+                    广告++;
+                    本地数据.put("火山看视频广告", 广告);
+                    if (广告 >= 13) {
+                        显示("返回首页");
+                        click("视频");
+                        sleep("3000")
+                        click("视频");
+                        sleep("3000")
+                    }
+                    break;
+                }
+                次数++;
+                显示("已看" + 广告 + "播放" + 次数)
+                if (次数 == 30) {
+                    次数 = 0
+                    break;
+                }
+
+            }
+        }
+
+    }
+
+}
+
+function 福利头条() {
+    if (本地数据.get("福利头条", "0") >= 45) { return; }
+    清理内存();
+    包名 = "com.walfaretoutiao";
+    打开应用(包名);
+    xc2 = threads.start(function () { 时间控制(15, 45, "福利头条"); })
+    var 滑动次数 = 0
+    while (true) {
+        if (退出 == 1) { 退出 = 0; return; }
+        sleep(2000);
+        if (text("分享").findOnce() || id("img_back").findOnce() || id("img_close").findOnce() || id("rp_progress_bar").findOnce() || textContains("滑动屏幕").findOne(500)) {
+            超时 = 0;
+            滑动次数++;
+            var 随机数 = random(18, 25);
+            显示("滑动" + 滑动次数 + "随机" + 随机数);
+            福利头条上滑();
+            if (textContains("查看全文").findOnce()) {
+                click("查看全文");
+                显示("查看全文");
+                sleep(2000);
+            }
+            if (text("忽略").exists()) {
+                滑动次数 = 0
+                click("忽略");
+                显示("忽略");
+                sleep(2000);
+                back();
+                sleep(2000);
+            }
+            else if (滑动次数 >= 随机数) {
+                滑动次数 = 0
+                显示("次数到");
+                back();
+                sleep(2000);
+            }
+        }
+        else if (textContains("拒绝一次").findOne(500)) {
+            click("拒绝一次");
+            显示("拒绝一次");
+            sleep(2000);
+        }
+        else if (textContains("继续阅读").findOne(500)) {
+            click("继续阅读");
+            显示("继续阅读");
+            sleep(3000);
+        }
+        else if (text("推荐").exists()) {
+            显示("首页");
+            超时 = 0;
+            if (textContains("阅读红包").findOne(500)) {
+                click("阅读红包");
+                显示("阅读红包");
+                sleep(3000);
+            }
+            首页上滑();
+            首页上滑();
+            var dj = id("img_news2").boundsInside(0, 600, 1078, 1500).findOne(2000) || id("img_news3").boundsInside(0, 600, 1078, 1500).findOne(2000)
+            if (dj) {
+                var x = dj.bounds().centerX(), y = dj.bounds().centerY()
+                显示("文章" + x + "-" + y);
+                if (x > 0 && y > 300) { click(x, y); }
+                sleep(3000);
+            }
+        }
+        else {
+            超时处理();
+        }
+
+    }
+    //
+    function 福利头条上滑() {
+        var x1, y1, x2, y2
+        x1 = random(302, 372);
+        y1 = random(1500, 1600);
+        x2 = random(441, 521);
+        y2 = random(800, 900);
+        if (random(0, 100) < 90) {
+            swipe(x1, y1, x2, y2, 600);
+        } else {
+            swipe(x2, y2, x1, y1, 600);//倒滑
+        }
+        sleep(random(1000, 3500));
+    }
+}
+
+function 二头条() {
+    if (本地数据.get("二头条", "0") >= 90) { return; }
+    清理内存();
+    包名 = "com.emar.mcn";
+    打开应用(包名);
+    xc2 = threads.start(function () { 时间控制(30, 90, "二头条"); })
+    var 滑动次数 = 0
+    while (true) {
+        if (退出 == 1) { 退出 = 0; return; }
+        sleep(1000);
+        if (text("看一看").exists()) {
+            阅读页上滑();
+            if (textContains("点击阅读全文").findOnce()) {
+                click("点击阅读全文");
+                显示("阅读全文");
+                sleep(2000);
+            }
+            滑动次数++;
+            var 随机数 = random(10, 15);
+            显示("滑动" + 滑动次数 + "随机" + 随机数);
+            if (滑动次数 >= 随机数) {
+                滑动次数 = 0
+                显示("次数到");
+                back();
+                sleep(2000);
+            }
+        }
+        else if (id("iv_close").exists() || id("iv_view_incentivePop_close").exists()) {
+            显示("弹窗")
+            back();
+            sleep(2000);
+        }
+        else if (text("推荐").exists()) {
+            显示("首页");
+            超时 = 0;
+            if (text("领取").exists()) {
+                click("领取");
+                显示("领取");
+                sleep(3000);
+            }
+            首页上滑();
+            首页上滑();
+            var dj = id("tv_online_num").findOne(1000)//人在线
+            if (dj) {
+                显示("文章");
+                click(dj.text());
+                sleep(3000);
+            }
+        }
+        else {
+            超时处理();
+        }
+
+    }
+}
+
+function 红包盒子() {
+    if (本地数据.get("红包盒子", "0") >= 40) { return; }
+    清理内存();
+    包名 = "com.bang.redbox";
+    打开应用(包名);
+    xc2 = threads.start(function () { 时间控制(20, 40, "红包盒子"); })
+    var 滑动次数 = 0, 签到 = 0;
+    while (true) {
+        if (退出 == 1) { 退出 = 0; return; }
+        sleep(1000);
+        if (id("id_popupDelete").exists()) {
+            显示("弹窗")
+            back();
+            sleep(2000);
+        }
+        else if (textContains("点我重试").exists()) {
+            click("点我重试");
+            显示("点我重试");
+            sleep(4000);
+        }
+        else if (text("新闻详情").exists()) {
+            阅读页上滑();
+            滑动次数++;
+            var 随机数 = random(10, 15);
+            显示("滑动" + 滑动次数 + "随机" + 随机数);
+            if (滑动次数 >= 随机数) {
+                滑动次数 = 0
+                显示("次数到");
+                back();
+                sleep(2000);
+            }
+        }
+        else if (text("推荐").exists()) {
+            显示("首页");
+            超时 = 0;
+            if (textContains("小时红包").boundsInside(10, 10, 1070, 500).findOnce()) {
+                click("点击领取"); 显示("小时红包"); sleep(4000); back(); sleep(3000);
+            }
+            if (签到 != 1) {
+                签到 = 1; click("任务"); 显示("签到"); sleep(3000);
+                var dj = id("tasksign_gtop_dec").findOne(5000);//点击领取签到
+                if (dj) {
+                    var x = dj.bounds().centerX(), y = dj.bounds().centerY()
+                    click(x, y); sleep(4000); back(); sleep(3000);
+                }
+                click("首页"); sleep(2000);
+            }
+            首页上滑();
+            首页上滑();
+            var dj = id("one_small_title").boundsInside(10, 1000, 1070, 1500).findOne(1000)
+            if (dj) {
+                显示("文章");
+                click(dj.text());
+                sleep(5000);
+            }
+        }
+        else {
+            超时处理();
+        }
+
+    }
+}
+
+function 趣多多() {
+    if (本地数据.get("趣多多", "0") >= 120) { return; }
+    清理内存();
+    包名 = "cn.lingyongqian.bronn";
+    打开应用(包名);
+    xc2 = threads.start(function () { 时间控制(40, 120, "趣多多"); })
+    while (true) {
+        if (退出 == 1) {
+            退出 = 0;
+            var dj = id("rbTaskCenter").findOne(1000).bounds()//任务页
+            if (dj) {
+                click(dj.centerX() + random(1, 10), dj.centerY() + random(1, 10));
+                sleep(5000);
+                首页上滑();
+                首页上滑();
+                click("领取");
+                sleep(2000);
+                click("领取");
+                sleep(2000);
+                click("领取");
+                sleep(2000);
+                click("点击开红包");
+                sleep(5000);
+            }
+            if (本地数据.get("趣多多提现", "0") != 1) {
+                显示("自动提现")
+                click("我的");
+                sleep(6000);
+                var 余额 = id("tvWalletBalance").findOne(15000)
+                if (余额.text() >= 1) {
+                    if (text("提现").findOne(9000)) {
+                        显示("提现");
+                        sleep(2000);
+                        click("提现");
+                        sleep(5000);
+                    }
+                    if (text("立即提现").findOne(8000)) {
+                        显示("立即提现")
+                        sleep(3000);
+                        click("1元");
+                        sleep(2000);
+                        click("立即提现");
+                        sleep(5000);
+                        var dj = text("确认").findOne(8000)
+                        dj.click()
+                        sleep(5000);
+                    }
+                    本地数据.put("趣多多提现", "1")
+                }
+            }
+            return;
+        }
+        sleep(1000);
+        if (textContains("不升级").findOnce()) {
+            click("不升级");
+            显示("不升级");
+            sleep(3000);
+        }
+        if (id("vgRewardLoading").exists()) {
+            显示("首页");
+            超时 = 0;
+            if (text("立即下载").exists() || text("查看详情").exists()) {
+                倒计时(random(10, 20));
+                趣多多滑动();
+            }
+            else {
+                倒计时(random(8, 30));
+            }
+            var w = device.width;
+            var h = device.height;
+            趣多多滑动();
+        }
+        else {
+            超时处理();
+        }
+
+    }
+    function 趣多多滑动() {
+        if (random(1, 3) == 2) {
+            swipe(w * 0.6 - random(10, 30), h * 0.7 + random(10, 20), w * 0.6 + random(50, 80), h * 0.4 + random(10, 30), random(220, 235));
+            sleep(4000);
+        }
+        else {
+            var 随机x1 = random(350, 500);
+            var 随机y1 = random(1500, 1600);
+            var 随机x2 = random(600, 850);
+            var 随机y2 = random(100, 200);
+            var 随机时间 = random(600, 1300);
+            swipe(随机x1, 随机y1, 随机x2, 随机y2, 随机时间);
+            sleep("2000");
+        }
+    }
+}
+
+function 花生头条() {
+    if (本地数据.get("花生头条", "0") >= 60) { return; }
+    清理内存();
+    包名 = "com.xcm.huasheng";
+    打开应用(包名);
+    xc2 = threads.start(function () { 时间控制(20, 60, "花生头条"); })
+    var 滑动次数 = 0
+    while (true) {
+        if (退出 == 1) { 退出 = 0; return; }
+        sleep(1000);
+        if (id("rl_title").exists()) {
+            if (id("title_star").exists()) {
+                阅读页上滑();
+                滑动次数++;
+                var 随机数 = random(10, 15);
+                显示("滑动" + 滑动次数 + "随机" + 随机数);
+                if (滑动次数 >= 随机数) {
+                    滑动次数 = 0
+                    显示("次数到");
+                    back();
+                    sleep(2000);
+                }
+                else if (textContains("开全文").findOnce()) {
+                    显示("展开全文");
+                    click("全文");
+                    sleep(2000);
+                }
+            } else {
+                显示("广告返回");
+                back();
+                sleep(2000);
+            }
+        }
+        else if (id("dialog_close").exists()) {
+            显示("弹窗返回");
+            back();
+            sleep(2000);
+        }
+        else if (textContains("忽略").findOnce()) {
+            显示("忽略");
+            click("忽略");
+            sleep(2000);
+        }
+        else if (text("领取").exists()) {
+            显示("领取");
+            click("领取");
+            sleep(2000);
+        }
+        else if (text("我笑纳了").exists()) {
+            显示("我笑纳了");
+            back();
+            sleep(2000);
+        }
+        else if (textContains("连续签到").findOnce()) {
+            显示("连续签到返回首页");
+            click("读读");
+            sleep(2000);
+        }
+        else if (text("推荐").exists()) {
+            显示("首页");
+            超时 = 0;
+            if (id("progress_bg").exists()) {
+                //右上角记时id
+                首页上滑();
+                首页上滑();
+                var dj = id("tv_news_three_picture_source").findOnce();
+                if (dj) {
+                    if (dj.text() != 已点文章) {
+                        显示("文章");
+                        click(dj.text());
+                        var 已点文章 = dj.text();
+                        sleep(4000);
+                    }
+                }
+            }
+            else {
+                //签到或时段奖励
+                显示("签到或时段奖励");
+                var dj = id("rl_signin").findOnce();
+                if (dj) { dj.click() }
+            }
+
+        }
+        else {
+            超时处理();
+        }
+
+    }
+}
+
+function 快看点() {
+    if (本地数据.get("快看点", "0") >= 75) { return; }
+    清理内存();
+    包名 = "com.yuncheapp.android.pearl";
+    打开应用(包名);
+    xc2 = threads.start(function () { 时间控制(25, 75, "快看点"); })
+    var 滑动次数 = 0
+    while (true) {
+        if (退出 == 1) { 退出 = 0; return; }
+        sleep(1000);
+        if (id("channel_manage_btn").exists()) {
+            显示("首页");
+            超时 = 0;
+            首页上滑();
+            var dj = id("cover2").boundsInside(10, 700, 1070, 1500).findOne(500)
+            if (dj) {
+                显示("文章");
+                click(dj.bounds().centerX() + random(300, 355), dj.bounds().centerY() + random(1, 60));
+                sleep(4000);
+            }
+        }
+        else if (id("comment_loc").exists()) {
+            阅读页上滑();
+            滑动次数++;
+            var 随机数 = random(10, 15);
+            显示("滑动" + 滑动次数 + "随机" + 随机数);
+            if (滑动次数 >= 随机数) {
+                滑动次数 = 0
+                显示("次数到");
+                back();
+                sleep(2000);
+            }
+            else if (id("video_more").exists()) {
+                显示("播放视频返回");
+                back();
+                sleep(2000);
+            }
+            else if (textContains("当前不在").findOnce()) {
+                显示("当前不在WiFi环境下");
+                back();
+                sleep(2000);
+            }
+        }
+        else if (textContains("继续阅读").findOnce()) {
+            显示("继续阅读");
+            click("继续阅读");
+            sleep(3000);
+            back();
+            滑动次数 = 0
+            sleep(2000);
+        }
+        else if (textContains("继续播放").findOnce()) {
+            显示("暂停播放");
+            click("暂停播放");
+            sleep(2000);
+        }
+        else if (textContains("收入囊中").findOnce()) {
+            显示("收入囊中");
+            click("收入囊中");
+            sleep(3000);
+        }
+        else {
+            超时处理();
+        }
+    }
+}
+
+function 快手极速版() {
+    if (本地数据.get("快手极速版", "0") >= 240) { return; }
+    清理内存();
+    包名 = "com.kuaishou.nebula";
+    打开应用(包名);
+    xc2 = threads.start(function () { 时间控制(60, 240, "快手极速版"); })
+    var 签到 = 0;
+    while (true) {
+        if (退出 == 1) {
+            退出 = 0;
+            return;
+        }
+        sleep(1000);
+        if (text("我知道了").exists()) {
+            显示("我知道了");
+            click("我知道了");
+            sleep(1000);
+        }
+        else if (id("right_btn").exists()) {
+            显示("首页");
+            超时 = 0;
+            首页上滑();
+            if (textContains("邀请").findOnce()) {
+                back();
+                sleep(2000);
+            }
+            首页上滑();
+            var 随机x = random(202, 620), 随机y = random(400, 800);
+            click(随机x, 随机y);
+            sleep(4000);
+        }
+        else if (id("forward_icon").exists()) {
+            //播放页
+            if (签到 != 1) {
+                签到 = 1;
+                显示("签到");
+                var dj = id("red_packet").findOne(2000)
+                if (dj) {
+                    var x = dj.bounds().centerX(), y = dj.bounds().centerY()
+                    显示("坐标" + x + "-" + y);
+                    if (x > 0 && 0 < y) { click(x, y); sleep(3000); click("立即签到"); sleep(4000); click("立即签到"); back(); sleep(3000); }
+                }
+
+            }
+
+            if (random(1, 10) == 9) {
+                //随机返回首页
+                back();
+                sleep("2000");
+            }
+            else {
+                if (random(1, 20) == 6) {
+                    //随机点赞
+                    var 随机x = random(402, 601), 随机y = random(500, 700);
+                    click(随机x, 随机y);
+                    sleep(100);
+                    click(随机x, 随机y);
+                    sleep(3000);
+                }
+                倒计时(random(15, 35));
+                var w = device.width;
+                var h = device.height;
+                swipe(w * 0.6 - random(10, 30), h * 0.7 + random(10, 20), w * 0.6 + random(50, 80), h * 0.4 + random(10, 30), random(220, 235));
+                sleep(2000);
+            }
+        }
+        else {
+            超时处理();
+        }
+    }
+
+}
+
+function 微鲤() {
+    if (本地数据.get("微鲤", "0") >= 105) { return; }
+    清理内存();
+    包名 = "cn.weli.story";
+    打开应用(包名);
+    xc2 = threads.start(function () { 时间控制(35, 105, "微鲤"); })
+    var 滑动次数 = 0, 签到 = 0, 已读 = 0;
+    while (true) {
+        if (退出 == 1) { 退出 = 0; return; }
+        sleep(1000);
+        if (id("tv_news").exists()) {
+            阅读页上滑();
+            滑动次数++;
+            var 随机数 = random(11, 17);
+            显示("已读" + 已读 + "滑动" + 滑动次数 + "随机" + 随机数);
+            if (textContains("展开查看全文").findOnce()) {
+                click("展开查看全文");
+                sleep(1000);
+            }
+            if (滑动次数 >= 随机数 || textContains("本篇奖励已达上限~").findOnce()) {
+                滑动次数 = 0
+                显示("次数到");
+                back();
+                已读++;
+                sleep(2000);
+            }
+        }
+        else if (text("开").exists()) {
+            显示("开");
+            click("开");
+            sleep(1000);
+        }
+        else if (id("img_back").exists()) {
+            显示("视频返回");
+            back();
+            sleep(1000);
+        }
+        else if (text("收下啦").exists()) {
+            显示("收下啦");
+            click("收下啦");
+            sleep(1000);
+        }
+        else if (text("知道了").exists()) {
+            显示("知道了");
+            click("知道了");
+            sleep(1000);
+        }
+        else if (textContains("明日大红包").findOnce()) {
+            click("明日大红包");
+            显示("明日大红包");
+            sleep(1000);
+        }
+        else if (id("text_ok").exists()) {
+            显示("text_ok");
+            back();
+            sleep(1000);
+        }
+        else if (text("微鲤福利").exists()) {
+            var dj = id("iv_take").findOne(1500);
+            if (dj) {
+                显示("收下");
+                dj.click();
+                sleep(3000);
+            }
+        }
+        else if (id("rl_head_line").exists()) {
+            显示("首页");
+            超时 = 0;
+            if (text("签到").findOnce()) {
+                显示("签到");
+                if (签到 == 0 && 已读 > 2) {
+                    签到 = 1;
+                    var dj = id("rl_head_line").findOne(500);
+                    if (dj) {
+                        dj.click();
+                    }
+                    sleep(7000);
+                    click("签");
+                    sleep(2000);
+                    back();
+                    sleep(2000);
+                }
+            }
+            else if (text("+50").exists()) {
+                click("+50");
+                sleep(6000);
+                back();
+            }
+            首页上滑();
+            if (text("领金币").exists()) {
+                click("领金币");
+                sleep(3000);
+                back();
+            }
+            首页上滑();
+            if (text("领金币").exists()) {
+                click("领金币");
+                sleep(4000);
+                back();
+            }
+            if (textContains("人在线").findOnce()) {
+                click("人在线");
+                sleep(3000);
+            }
+        }
+        else {
+            超时处理();
+        }
+    }
+}
+
+function 趣头条() {
+    if (本地数据.get("趣头条", "0") >= 75) { return; }
+    清理内存();
+    包名 = "com.jifen.qukan";
+    打开应用(包名);
+    xc2 = threads.start(function () { 时间控制(25, 75, "趣头条"); })
+    var 滑动次数 = 0, 签到 = 0;
+    while (true) {
+        if (退出 == 1) { 退出 = 0; return; }
+        sleep(1000);
+        if (text("推荐").exists()) {
+            超时 = 0;
+            if (签到 != 1) {
+                签到 = 1;
+                click("任务");
+                click("去签到");
+                显示("签到");
+                sleep(5000);
+                click("头条");
+                sleep(3000);
+            }
+            if (text("领取").exists()) {
+                显示("领取");
+                var dj = id("a85").text("领取").findOne(500)
+                if (dj.bounds().bottom < 400) {
+                    click(dj.bounds().centerX(), dj.bounds().centerY());
+                    sleep(3000);
+                }
+            }
+            var i = 0;
+            while (i != 2) {
+                首页上滑();
+                if (textContains("惊喜红包").findOnce()) {
+                    显示("惊喜红包");
+                    click("惊喜红包");
+                    sleep(2000);
+                }
+                else if (textContains("金币奖励").findOnce()) {
+                    显示("金币奖励");
+                    click("金币奖励");
+                    sleep(2000);
+                }
+                i++;
+            }
+            var dj = id("ajs").findOne(2000) || id("aib").findOne(600);
+            if (dj) {
+                var x = dj.bounds().centerX(), y = dj.bounds().centerY()
+                显示("文章" + x + "-" + y);
+                if (x > 0 && 400 < y && y < 1500) { click(x, y); sleep(4000); }
+            }
+        }
+        else if (text("继续播放").exists()) {
+            显示("继续播放返回");
+            back();
+            sleep(2000);
+        }
+        else if (text("头条").exists()) {
+            click("头条");
+            显示("头条");
+            sleep(3000);
+        }
+        else if (textContains("继续使用").findOnce()) {
+            显示("继续使用");
+            click("继续使用");
+            sleep(2000);
+        }
+        else if (id("a4e").exists()) {
+            //新
+            显示("关闭a4e");
+            dj = id("a4e").findOne(1000)
+            dj.click(); sleep(2000);
+        }
+        else if (id("a2u").exists()) {
+            显示("锁屏读资讯关闭");
+            back();
+            sleep(2000);
+        }
+        else if (id("qw").exists() || text("我要免流量").exists()) {
+            显示("视频页返回");
+            back();
+            sleep(2000);//视频页    
+        }
+        else if (id("a9i").exists()) {
+            显示("关闭a9i");
+            dj = id("a9i").findOne(1000)
+            dj.click();
+            sleep(2000);//关闭x
+        }
+        else if (id("js").exists() || text("我来说两句...").exists()) {
+            阅读页上滑();
+            滑动次数++;
+            var 随机数 = random(10, 15);
+            显示("滑动" + 滑动次数 + "随机数" + 随机数);
+            sleep(2000);
+            if (滑动次数 >= 随机数) {
+                滑动次数 = 0
+                显示("次数到");
+                back();
+                sleep(2000);
+            }
+        }
+        else {
+            超时处理();
+        }
+    }
+}
+
+function 优看点() {
+    if (本地数据.get("优看点", "0") >= 90) { return; }
+    清理内存();
+    包名 = "com.memory.online";
+    打开应用(包名);
+    xc2 = threads.start(function () { 时间控制(30, 90, "优看点"); })
+    var 滑动次数 = 0
+    while (true) {
+        if (退出 == 1) { 退出 = 0; return; }
+        sleep(1000);
+        if (text("继续赚钱").exists()) {
+            click("继续赚钱");
+            显示("继续赚钱");
+            sleep(2000);
+        }
+        else if (id("iv_history").exists()) {
+            显示("首页");
+            超时 = 0;
+            首页上滑();
+            首页上滑();
+            if (id("tv_topicicon").exists()) {
+                显示("分享");
+                var dj = id("tv_topicicon").findOnce().bounds();
+                click(dj.centerX(), dj.centerY());
+                sleep(4000);
+            }
+        }
+        else if (id("iv_back").exists()) {
+            if (textContains("展开全文").findOnce()) {
+                sleep(1000);
+                click("展开全文");
+                sleep(3000);
+            }
+            阅读页上滑();
+            滑动次数++;
+            var 随机数 = random(10, 15);
+            显示("滑动" + 滑动次数 + "随机" + 随机数);
+            if (textContains("恭喜您获得系统").findOnce()) {
+                显示("恭喜您获得");
+                click("朕知道了");
+                sleep(2000);
+                back();
+                滑动次数 = 0
+                sleep(2000);
+            }
+            else if (滑动次数 >= 随机数) {
+                滑动次数 = 0
+                显示("次数到");
+                back();
+                sleep(2000);
+            }
+        }
+        else if (text("双倍奖励阅读").exists()) {
+            优看点双倍奖励();
+        }
+        else {
+            超时处理();
+        }
+    }
+}
+
+function 优看点双倍奖励() {
+    显示("双倍奖励阅读");
+    var 次数 = 0
+    while (true) {
+        sleep(1000);
+        if (textContains("上下滑动页面").findOnce()) {
+            显示("上下滑动页面")
+            while (true) {
+                if (textContains("恭喜您获得系统").findOnce()) {
+                    click("朕知道了");
+                    sleep(3000);
+                    while (true) {
+                        if (id("iv_history").exists() || text("继续赚钱").exists()) {
+                            显示("退出双倍奖励阅读");
+                            return;
+                        } else {
+                            back();
+                            sleep(4000);
+                        }
+                    }
+                } else {
+                    阅读页上滑();
+                }
+            }
+        }
+        else {
+            click(random(250, 900), random(900, 1400));
+            sleep(6000);
+            次数 = 次数 + 1
+            显示(次数)
+            if (次数 >= 30) { 清理内存(); return; }
+        }
+    }
+
+}
+
+function 多福看看() {
+    if (本地数据.get("多福看看", "0") >= 60) { return; }
+    清理内存();
+    包名 = "cn.net.duofu.kankan";
+    打开应用(包名);
+    xc2 = threads.start(function () { 时间控制(20, 60, "多福看看"); })
+    var 滑动次数 = 0
+    while (true) {
+        if (退出 == 1) { 退出 = 0; return; }
+        sleep(1000);
+        if (id("activity_article_detail_toolbar_back_button").exists()) {
+            阅读页上滑();
+            滑动次数++;
+            var 随机数 = random(10, 15);
+            显示("滑动" + 滑动次数 + "随机数" + 随机数);
+            if (滑动次数 >= 随机数) {
+                滑动次数 = 0
+                back();
+                sleep(2000);
+            }
+            else if (textContains("查看全文").findOnce()) {
+                显示("查看全文");
+                click("查看全文");
+                sleep(1000);
+            }
+        }
+        else if (textContains("继续播放").findOnce() || id("ll_video_like").exists() || id("tv_resume").exists() || textContains("此视频播放").findOnce() || id("tv_tips_size").exists()) {
+            显示("继续播放返回");
+            back();
+            sleep(4000);
+        }
+        else if (id("iv_close").exists()) {
+            var dj = id("iv_close").findOnce()//关闭广告文章x
+            dj.click();
+            sleep(2000);
+        }
+        else if (text("刷新").findOnce()) {
+            显示("首页");
+            超时 = 0;
+            if (text("领铜钱").exists()) {
+                click("领铜钱");
+            }
+            首页上滑();
+            if (text("领铜钱").exists()) {
+                click("领铜钱");
+            }
+            if (textContains("加载失败").findOnce()) {
+                click("加载失败");
+                显示("加载失败");
+                sleep(5000);
+            }
+            首页上滑();
+            if (textContains("人看过").findOnce()) {
+                显示("人看过");
+                click("人看过");
+                sleep(4000);
+            }
+            else if (id("ad_root").exists()) {
+                显示("ad_root");
+                var dj = id("ad_root").findOnce()
+                dj.click();
+                sleep(4000);
+            }
+        }
+        else {
+            超时处理();
+        }
+    }
+}
+
+
+/*********************共用函数***************************** */
+function 显示(传入值) {
+    ui.run(function () {
+        悬浮窗.text.setText("【" + 传入值 + "】");
+    });
+}
+
+function 超时处理() {
+    超时++;
+    显示("超时" + 超时);
+    sleep("1000");
+    if (超时 == 6) {
+        超时 = 0;
+        if (currentPackage() != 包名) {
+            打开应用(包名);
+        }
+        else {
+            back();
+            sleep("2000");
+        }
+    }
+}
+function 倒计时(传入值) {
+    while (传入值 > 0) {
+        显示("倒计时" + 传入值);
+        sleep("2000");
+        传入值 = 传入值 - 2
+    }
+}
+function 首页上滑() {
+    var x1 = random(500, 600);
+    var y1 = random(1200, 1300);
+    var y2 = y1 - 1000;
+    swipe(x1, y1, x1, y2, 800);
+    sleep("2000");
+}
+
+function 阅读页上滑() {
+    var x1, y1, x2, y2, 延时
+    x1 = random(302, 372);
+    y1 = random(1300, 1400);
+    x2 = random(441, 521);
+    y2 = random(800, 900);
+    延时 = random(1500, 5000);
+    if (random(0, 100) < 90) {
+        swipe(x1, y1, x2, y2, 600);
+    } else {
+        swipe(x2, y2, x1, y1, 600);//倒滑
+    }
+    sleep(延时);
+}
+
+function 打开应用(传入值) {
+    if (device.brand == "HONOR" || device.brand == "HUAWEI") {
+        app.launch("com.xye");
+        sleep(3000);
+    }
+    显示("打开应用" + 传入值)
+    app.launch(传入值);
+    var i = 0;
+    while (i < 6) {
+        sleep("1000")
+        if (text("允许").exists()) {
+            click("允许");
+            break;
+        }
+        i++;
+    }
+    倒计时(6);
+}
+
+function 清理内存() {
+    home();
+    sleep(3000);
+    recents();//任务键
+    sleep(3000);
+    var 清理 = id("clearAnimView").findOnce() || id("recent_igmbutton_clear_all").findOnce() || id("clear_all_recents_image_button").findOnce();
+    if (清理) {
+        清理.click();
+    }
+    sleep(3000);
+}
+
+function 对比颜色(x1, y1, x2, y2, 颜色) {
+    //requestScreenCapture();//屏幕截图权限
+    var img = captureScreen(), x = x1, y = y1, 数量 = 0;;
+    while (true) {
+        x = x + 1
+        if (x == x2) {
+            x = x1
+            y = y + 1
+            if (y == y2) {
+                return 数量;
+            }
+        }
+        if (images.pixel(img, x, y) == 颜色) {
+            数量++;
+        }
+    }
+}
+
+function 颜色数量(x1, y1, x2, y2, 颜色) {
+    //requestScreenCapture();//屏幕截图权限
+    var img = captureScreen(), x = x1, y = y1, 数量 = 0;;
+    while (true) {
+        x = x + 1
+        if (x == x2) {
+            x = x1
+            y = y + 1
+            if (y == y2) {
+                return 数量;
+            }
+        }
+        点 = images.pixel(img, x, y)
+        if (colors.isSimilar(点, 颜色, threshold = 10) == true) {
+            数量++;
+        }
+    }
+}
+
+function 是否卡住() {
+    var 数量 = 0, img = captureScreen();
+    var 点1 = images.pixel(img, 200, 500)
+    var 点2 = images.pixel(img, 400, 500)
+    var 点3 = images.pixel(img, 600, 500)
+    数量 = 点1 + 点2 + 点3
+    return 数量;
+}
+
+function 微信选择() {
+    显示("微信选择")
+    if (device.brand == "HONOR" || device.brand == "HUAWEI") {
+        sleep(100);
+    }
+    else {
+        var 微信1 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACcAAAAdCAYAAAApQnX+AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAPhSURBVFhH5ZbbTxN5FMf3L1kR0VWD13jbbDYSE8ODiQ9q9MkYaCmi0N2VrPqiaCKaSMKLwUtivLwYNRKwM6WFoiJrFtSNbKggEm8oFTG2IpTaCzNfz/nNTG8UtcMuD3qab+c3v9v5/M45nekPyNJUxDCBEHyRXkhP63D41hbsdi9GaetsIZsnh5QrVGKohftzaXyOUHy8NUcTta00h682fZzXpMCpqqq3UtuGcY/WqyCMUTyNdOJk52+wu1boDhlsMpxxn65kOIZKn//FyGWCZIshiEHFi1N//4kK58r4xixrCzvKSwHJJI6WocTa2bA0a8BfndZ0SIZ7GenCyfZKlMsr0hzl0ZUAuf0ZJa/JpKxrzrAoxvAk1IETbRXYLS+LO+NTG5sbkUiHSb8v9swRMu4NTQNuFA9HbqD2lg27pMWwEhSDGXDJbR4T0vvT7y3NubpS9zANF0IAXQEnam7uILhF5OzHlM1ZRS05FBGKjJshEvU0Wf8DXMfwNRxp3YZSKR8W9yyCmJXigOGEXARJgMY416MBJMBdmng8WabhxvAWN19dQFXzJtjkfOEkIcNBcl8CwuLK00WQAiqzTMONYkg8hPe5CjPAsTQ4BihuogervBBljiWwy2uwt3k99rUUotJVgAppNcquL0Opk+rWuRDWpnlxcHNw9FT5AB+u9h7Dnqa1sMgLROqKXLlaCpsMUeqcc2Fz5KNSLkC1Zzsu3DsI6dEZuPvPocF7Aqfb96O2rYwysBn2678KUJ5vkX8yGzkF/onnOPvPXpQ7VtGJ5yfBUR1RpEpoc3Zid/wi6vJKbzUe+GX4Yg8xQgcbxTAC6gAGw170Bf9C++tLuNJzFHX37Djevh0HPBuzh1PVCfqOYXDci7rOcnFSjo4Gp0eLwCqkVTjg3ESROoS7PhlvIo/FjyiKcXo3h0lR/RpEhPIQpBp+r7zCwHg3vG/bcOdFffZwCm2n0Mb9gbuouW0RcMXSPBQ56fUjLcDOxqX4vbEAtbdL4Hl+Hi9CXYTzXqzh1anG98l9ivhjEaVjhCm+WcFpL36FPlH0DN/BsRs7UNawHFbHfJHC8vqfUeXYCqnnDJ4FH1A0hslVSDicDDaVMaAGaQqOFw597MfF+4exv3ED/mhYJ+rqcs8RdH9wwx8bIPywmGvYVH8gPmemfxAfKex97zog/3se9ffr0DlIxR7uoxT6RS0lg5k1k3CMFxWA/ohPaEwNUDwj/wmUYdnBaXklYwAtvSpBauK2DqbQpElZzB56WnBTmj4vUWdfmJ/BeK3ptM6EfTtw8azOkH07cDNt3zFcWh1kWxbfMdy0DPgEZIyQ4QEKo24AAAAASUVORK5CYII="
+        var 解码图片 = images.fromBase64(微信1)
+        var i = 0
+        while (i < 10) {
+            sleep("2000");
+            var p = findImage(captureScreen(), 解码图片, {
+                region: [200, 1300, 350, 350],
+                threshold: 0.9
+            });
+            if (p) {
+                click(p.x, p.y)
+                return;
+            }
+            i = i + 1;
+        }
+    }
+}
+
+function 坚果云获取(path, 存放路径) {
+    var 下载动画 = threads.start(function () {
+        var 用时 = 0
+        while (true) {
+            toast("下载中》已耗时" + 用时 + "秒");
+            sleep("5000");
+            用时 = 用时 + 5;
+        }
+    });
+    var url = "https://dav.jianguoyun.com/dav/";
+    var code = "ODQwMDgxNzQxQHFxLmNvbTphZW10dzd1emN3azVlcHVn"
+    var res = http.get(url + path, {
+        headers: {
+            "Authorization": "Basic " + code,
+            "Content-Type": "text/plain;charset=UTF-8",
+            "Connection": "Keep-Alive",
+            "Accept-Encoding": "gzip",
+            "User-Agent": "okhttp/3.12.1"
+        }
+    });
+    if (res.statusCode == 200) {
+        var 结构 = res.body.bytes()
+        files.writeBytes(存放路径, 结构);
+        sleep("3000");
+        下载动画.interrupt();//停止线程执行 
+        toast("下载成功");
+        sleep("3000");
+        app.viewFile(存放路径);
+    } else {
+        toast("下载失败")
+    }
+}
+function base64(str) {
+    return java.lang.String(android.util.Base64.encode(java.lang.String(str).getBytes(), 2));
+}
